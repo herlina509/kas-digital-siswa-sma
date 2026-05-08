@@ -1,0 +1,104 @@
+[
+  {
+    "nama": "Andi",
+    "kelas": "XII RPL",
+    "total_tagihan": 100000,
+    "dibayar": 100000,
+    "pengeluaran": 0,
+    "status": "LUNAS",
+    "tanggal": "2026-05-08"
+  }
+]
+$data = bacaTransaksi($dataFile);
+
+$totalBayar = 0;
+$totalTunggakan = 0;
+$totalPengeluaran = 0;
+$jumlahLunas = 0;
+$jumlahBelum = 0;
+
+foreach ($data as $d) {
+
+    $totalBayar += $d['dibayar'] ?? 0;
+    $totalPengeluaran += $d['pengeluaran'] ?? 0;
+
+    if (($d['status'] ?? '') == "LUNAS") {
+        $jumlahLunas++;
+    } else {
+        $jumlahBelum++;
+        $totalTunggakan += (($d['total_tagihan'] ?? 0) - ($d['dibayar'] ?? 0));
+    }
+}
+
+$saldo = $totalBayar - $totalPengeluaran;
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+
+    <div class="bg-green-600 text-white p-4 rounded-xl">
+        <p>💰 Total Bayar</p>
+        <h2 class="text-xl font-bold">Rp <?= number_format($totalBayar) ?></h2>
+    </div>
+
+    <div class="bg-red-600 text-white p-4 rounded-xl">
+        <p>⚠️ Total Tunggakan</p>
+        <h2 class="text-xl font-bold">Rp <?= number_format($totalTunggakan) ?></h2>
+    </div>
+
+    <div class="bg-blue-600 text-white p-4 rounded-xl">
+        <p>📉 Pengeluaran</p>
+        <h2 class="text-xl font-bold">Rp <?= number_format($totalPengeluaran) ?></h2>
+    </div>
+
+    <div class="bg-gray-800 text-white p-4 rounded-xl">
+        <p>💳 Saldo</p>
+        <h2 class="text-xl font-bold">Rp <?= number_format($saldo) ?></h2>
+    </div>
+
+</div>
+<div class="bg-white rounded-xl shadow p-4">
+
+<h2 class="font-bold mb-3">📋 Status Siswa</h2>
+
+<table class="w-full text-sm">
+<thead class="bg-gray-100">
+<tr>
+    <th class="p-2">Nama</th>
+    <th class="p-2">Kelas</th>
+    <th class="p-2">Tagihan</th>
+    <th class="p-2">Dibayar</th>
+    <th class="p-2">Status</th>
+</tr>
+</thead>
+
+<tbody>
+
+<?php foreach ($data as $d): ?>
+
+<?php
+$warna = ($d['status'] ?? '') == "LUNAS"
+    ? "text-green-600"
+    : "text-red-600";
+?>
+
+<tr class="border-t">
+    <td class="p-2"><?= $d['nama'] ?? '-' ?></td>
+    <td class="p-2"><?= $d['kelas'] ?? '-' ?></td>
+    <td class="p-2">Rp <?= number_format($d['total_tagihan'] ?? 0) ?></td>
+    <td class="p-2">Rp <?= number_format($d['dibayar'] ?? 0) ?></td>
+    <td class="p-2 font-bold <?= $warna ?>">
+        <?= $d['status'] ?? '-' ?>
+    </td>
+</tr>
+
+<?php endforeach; ?>
+
+</tbody>
+</table>
+
+</div>
+if ($dibayar >= $total) {
+    $status = "LUNAS";
+} elseif ($dibayar > 0) {
+    $status = "BELUM LUNAS";
+} else {
+    $status = "BELUM BAYAR";
+}
